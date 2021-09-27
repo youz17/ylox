@@ -1,7 +1,0 @@
-Language:        Cpp
-BasedOnStyle:  LLVM
-TabWidth:        4
-UseCRLF:         false
-UseTab:          Never
-IndentWidth:	4
-

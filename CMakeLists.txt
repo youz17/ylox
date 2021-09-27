@@ -21,9 +21,10 @@ add_executable (${PROJECT_NAME}
 	"src/scanner.h"
 	"src/tools.h"
 	"src/ast.h"
-	"src/box.h"
 	"src/ast_print.h"
 	"src/ast_print.cpp"
+	"src/parser.h"
+	"src/parser.cpp"
     )
 
 target_precompile_headers(
