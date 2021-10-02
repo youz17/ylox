@@ -13,18 +13,26 @@ project (${PROJECT_NAME})
 # find_package example
 # find_package(Qt5 COMPONENTS Core Gui Widgets)
 
-# 将源代码添加到此项目的可执行文件。
-add_executable (${PROJECT_NAME}  
+set(HEADERS
 	"src/stdafx.h"
-	"src/main.cpp"
-	"src/scanner.cpp"
-	"src/scanner.h"
 	"src/tools.h"
 	"src/ast.h"
-	"src/ast_print.h"
-	"src/ast_print.cpp"
+	"src/scanner.h"
 	"src/parser.h"
+	"src/ast_print.h"
+)
+
+set(SOURCES
+	"src/main.cpp"
+	"src/scanner.cpp"
 	"src/parser.cpp"
+	"src/ast_print.cpp"
+)
+
+# 将源代码添加到此项目的可执行文件。
+add_executable (${PROJECT_NAME}  
+	${HEADERS}
+	${SOURCES}
     )
 
 target_precompile_headers(

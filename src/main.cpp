@@ -1,19 +1,15 @@
 #include "stdafx.h"
-#include <algorithm>
-#include <iostream>
-#include <string>
-#include <string_view>
-#include <vector>
 
 #include "scanner.h"
+#include "parser.h"
+#include "ast_print.h"
 
 void run_prompt() {
     std::string input;
     while (true) {
         std::getline(std::cin, input);
-        auto result = scan(input);
-        std::ranges::for_each(
-            result, [](Token t) { std::cout << std::format("{}\n", t); });
+        auto expr = Parse(Scan(input));
+        AstPrinter::Print(*expr);
     }
 }
 

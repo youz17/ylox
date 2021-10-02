@@ -1,3 +1,5 @@
+#pragma once
+
 #include <format>
 #include <string_view>
 #include <vector>
@@ -64,7 +66,7 @@ struct Token {
 };
 
 // 为了简单起见， 目前直接使用 std::string_view , 只支持 ascii
-std::vector<Token> scan(std::string_view source);
+std::vector<Token> Scan(std::string_view source);
 
 ////////////////// help function /////////////////////
 

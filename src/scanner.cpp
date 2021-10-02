@@ -210,9 +210,9 @@ class Scanner {
 
 } // namespace scanner
 
-std::vector<Token> scan(std::string_view source) {
+std::vector<Token> Scan(std::string_view source) {
     scanner::Scanner s(source);
-    return std::move(s.tokens());
+    return s.tokens();
 }
 
 std::string to_string(TokenType t) {

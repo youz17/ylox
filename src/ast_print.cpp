@@ -6,7 +6,7 @@ std::string AstPrinter::visit_unary_expr(Unary &unary) {
     return std::format("({} {})", unary.op, unary.value->accept(*this));
 }
 
-std::string AstPrinter::visit_string_expr(String &str) { return str.value; }
+std::string AstPrinter::visit_string_expr(String &str) { return std::string(str.value); }
 
 std::string AstPrinter::visit_number_expr(Number &num) {
     return std::format("{}", num.value);
@@ -25,7 +25,12 @@ std::string AstPrinter::visit_group_expr(Group &group) {
     return std::format("(group {})", group.expr->accept(*this));
 }
 
-void AstPrinter::print(Expr &expr) {
+std::string AstPrinter::visit_nil_expr(Nil&)
+{
+    return "nil";
+}
+
+void AstPrinter::Print(Expr &expr) {
     AstPrinter p;
     std::cout << expr.accept(p) << std::endl;
 }
