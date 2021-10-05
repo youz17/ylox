@@ -2,6 +2,9 @@
 
 #include "parser.h"
 
+#include <functional>
+
+// todo: error handle, & and | , &&, ||
 namespace
 {
 	enum class ExprType
@@ -10,6 +13,7 @@ namespace
 		Comparison,
 		Term,
 		Factor,
+		Logical,
 		Unary,
 		Primary,
 		Other,
@@ -33,6 +37,9 @@ namespace
 		case TokenType::Star:
 		case TokenType::Slash:
 			return ExprType::Factor;
+		case TokenType::And:
+		case TokenType::Or:
+			return ExprType::Logical;
 		default:
 			return ExprType::Other;
 		}
@@ -43,6 +50,24 @@ namespace
 		return t.type == TokenType::Plus || t.type == TokenType::Bang;
 	}
 
+	bool IsStartToken(const Token& t)
+	{
+		switch (t.type)
+		{
+		case TokenType::If:
+		case TokenType::For:
+		case TokenType::While:
+		case TokenType::Let:
+		case TokenType::Class:
+		case TokenType::Fn:
+		case TokenType::Print:
+		case TokenType::Return:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	class Parser
 	{
 	public:
@@ -50,64 +75,52 @@ namespace
 
 		std::unique_ptr<Expr> Expression()
 		{
-			return Equality();
+			return Logical();
 		}
 
 	private:
-		std::unique_ptr<Expr> Equality()
-		{
-			auto expr = Comparison();
+		// TODO: rename
+		using BinOperationFunType = unique_ptr<Expr>(Parser::*)();
 
-			while (GetBinTokenExprType(Peek()) == ExprType::Equality)
+		// TODO: rename
+		std::unique_ptr<Expr> BinOperationImpl(ExprType exprType, BinOperationFunType subExprFun)
+		{
+			auto expr = (this->*subExprFun)();
+
+			while (GetBinTokenExprType(Peek()) == exprType)
 			{
 				const TokenType op = Next().type;
-				auto right = Comparison();
+				auto right = (this->*subExprFun)();
 				expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
 			}
 
 			return expr;
+		}
+
+		// 好像可以进一步抽象，只定义优先级就好了
+		std::unique_ptr<Expr> Logical()
+		{
+			return BinOperationImpl(ExprType::Logical, &Parser::Equality);
+		}
+
+		std::unique_ptr<Expr> Equality()
+		{
+			return BinOperationImpl(ExprType::Equality, &Parser::Comparison);
 		}
 
 		std::unique_ptr<Expr> Comparison()
 		{
-			auto expr = Term();
-
-			while (GetBinTokenExprType(Peek()) == ExprType::Comparison)
-			{
-				const TokenType op = Next().type;
-				auto right = Term();
-				expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
-			}
-
-			return expr;
+			return BinOperationImpl(ExprType::Comparison, &Parser::Term);
 		}
 
 		std::unique_ptr<Expr> Term()
 		{
-			auto expr = Factor();
-
-			while (GetBinTokenExprType(Peek()) == ExprType::Term)
-			{
-				const TokenType op = Next().type;
-				auto right = Factor();
-				expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
-			}
-
-			return expr;
+			return BinOperationImpl(ExprType::Term, &Parser::Factor);
 		}
 
 		std::unique_ptr<Expr> Factor()
 		{
-			auto expr = Unary();
-
-			while (GetBinTokenExprType(Peek()) == ExprType::Factor)
-			{
-				const TokenType op = Next().type;
-				auto right = Unary();
-				expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
-			}
-
-			return expr;
+			return BinOperationImpl(ExprType::Factor, &Parser::Unary);
 		}
 
 		std::unique_ptr<Expr> Unary()
@@ -122,7 +135,7 @@ namespace
 
 		std::unique_ptr<Expr> Primary()
 		{
-			const auto token = Next();
+			const auto& token = Next();
 			switch (token.type)
 			{
 			case TokenType::Str:
@@ -142,12 +155,29 @@ namespace
 			case TokenType::LeftParen:
 			{
 				auto expr = Expression();
-				const auto next = Next();
+				const auto& next = Next();
 				assert(next.type == TokenType::RightParen);
 				return make_unique<Group>(std::move(expr));
 			}
+			case TokenType::Eof:
+				// todo
+				assert(false);
 			default:
 				assert(false);
+			}
+		}
+
+		// 当前语句出错的时候跳过这个语句
+		void Synchronize()
+		{
+			while (!IsEnd())
+			{
+				const auto& next = PeekNext();
+				if (next.type == TokenType::Eof)
+					return;
+				if (IsStartToken(next))
+					return;
+				m_idx++;
 			}
 		}
 
