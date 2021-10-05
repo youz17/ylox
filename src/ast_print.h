@@ -3,13 +3,13 @@
 #include "ast.h"
 
 struct AstPrinter : public AstVisitor<std::string> {
-    std::string visit_unary_expr(Unary &) override;
-    std::string visit_string_expr(String &) override;
-    std::string visit_number_expr(Number &) override;
-    std::string visit_bool_expr(Bool &) override;
-    std::string visit_binary_expr(Binary &) override;
-    std::string visit_group_expr(Group &) override;
-    std::string visit_nil_expr(Nil&) override;
+    std::string VisitUnaryExpr(Unary &) override;
+    std::string VisitStringExpr(String &) override;
+    std::string VisitNumberExpr(Number &) override;
+    std::string VisitBoolExpr(Bool &) override;
+    std::string VisitBinaryExpr(Binary &) override;
+    std::string VisitGroupExpr(Group &) override;
+    std::string VisitNilExpr(Nil&) override;
 
     static void Print(Expr& expr);
 };

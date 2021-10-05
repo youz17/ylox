@@ -16,119 +16,119 @@ template<typename R>
 struct AstVisitor
 {
 	virtual ~AstVisitor() = default;
-	virtual R visit_unary_expr(Unary&) = 0;
-	virtual R visit_string_expr(String&) = 0;
-	virtual R visit_number_expr(Number&) = 0;
-	virtual R visit_bool_expr(Bool&) = 0;
-	virtual R visit_binary_expr(Binary&) = 0;
-	virtual R visit_group_expr(Group&) = 0;
-	virtual R visit_nil_expr(Nil&) = 0;
+	virtual R VisitUnaryExpr(Unary&) = 0;
+	virtual R VisitStringExpr(String&) = 0;
+	virtual R VisitNumberExpr(Number&) = 0;
+	virtual R VisitBoolExpr(Bool&) = 0;
+	virtual R VisitBinaryExpr(Binary&) = 0;
+	virtual R VisitGroupExpr(Group&) = 0;
+	virtual R VisitNilExpr(Nil&) = 0;
 };
 
 struct Expr
 {
 	virtual ~Expr() = default;
-	virtual void accept(AstVisitor<void>& visitor) = 0;
-	virtual std::string accept(AstVisitor<std::string>& visitor) = 0;
+	virtual void Accept(AstVisitor<void>& visitor) = 0;
+	virtual std::string Accept(AstVisitor<std::string>& visitor) = 0;
 };
 
-struct Unary : public Expr
+struct Unary final : public Expr
 {
 	TokenType op;
 	std::unique_ptr<Expr> value;
 	Unary(TokenType op_, std::unique_ptr<Expr> value_) :op(op_), value(std::move(value_)) {}
-	void accept(AstVisitor<void>& visitor) override
+	void Accept(AstVisitor<void>& visitor) override
 	{
-		return visitor.visit_unary_expr(*this);
+		return visitor.VisitUnaryExpr(*this);
 	}
-	std::string accept(AstVisitor<std::string>& visitor) override
+	std::string Accept(AstVisitor<std::string>& visitor) override
 	{
-		return visitor.visit_unary_expr(*this);
+		return visitor.VisitUnaryExpr(*this);
 	}
 };
 
-struct String : public Expr
+struct String final : public Expr
 {
 	std::string_view value;
-	String(std::string_view value_) :value(value_) {}
-	void accept(AstVisitor<void>& visitor) override
+	explicit String(std::string_view value_) :value(value_) {}
+	void Accept(AstVisitor<void>& visitor) override
 	{
-		return visitor.visit_string_expr(*this);
+		return visitor.VisitStringExpr(*this);
 	}
-	std::string accept(AstVisitor<std::string>& visitor) override
+	std::string Accept(AstVisitor<std::string>& visitor) override
 	{
-		return visitor.visit_string_expr(*this);
+		return visitor.VisitStringExpr(*this);
 	}
 };
 
-struct Number : public Expr
+struct Number final : public Expr
 {
 	double value;
-	Number(double value_) :value(value_) {}
-	void accept(AstVisitor<void>& visitor) override
+	explicit Number(double value_) :value(value_) {}
+	void Accept(AstVisitor<void>& visitor) override
 	{
-		return visitor.visit_number_expr(*this);
+		return visitor.VisitNumberExpr(*this);
 	}
-	std::string accept(AstVisitor<std::string>& visitor) override
+	std::string Accept(AstVisitor<std::string>& visitor) override
 	{
-		return visitor.visit_number_expr(*this);
+		return visitor.VisitNumberExpr(*this);
 	}
 };
 
-struct Bool : public Expr
+struct Bool final : public Expr
 {
 	bool value;
-	Bool(bool value_) :value(value_) {}
-	void accept(AstVisitor<void>& visitor) override
+	explicit Bool(bool value_) :value(value_) {}
+	void Accept(AstVisitor<void>& visitor) override
 	{
-		return visitor.visit_bool_expr(*this);
+		return visitor.VisitBoolExpr(*this);
 	}
-	std::string accept(AstVisitor<std::string>& visitor) override
+	std::string Accept(AstVisitor<std::string>& visitor) override
 	{
-		return visitor.visit_bool_expr(*this);
+		return visitor.VisitBoolExpr(*this);
 	}
 };
 
-struct Binary : public Expr
+struct Binary final : public Expr
 {
 	std::unique_ptr<Expr> left;
 	TokenType op;
 	std::unique_ptr<Expr> right;
 	Binary(std::unique_ptr<Expr> left_, TokenType op_, std::unique_ptr<Expr> right_) :left(std::move(left_)), op(op_), right(std::move(right_)) {}
-	void accept(AstVisitor<void>& visitor) override
+	void Accept(AstVisitor<void>& visitor) override
 	{
-		return visitor.visit_binary_expr(*this);
+		return visitor.VisitBinaryExpr(*this);
 	}
-	std::string accept(AstVisitor<std::string>& visitor) override
+	std::string Accept(AstVisitor<std::string>& visitor) override
 	{
-		return visitor.visit_binary_expr(*this);
+		return visitor.VisitBinaryExpr(*this);
 	}
 };
 
-struct Group : public Expr
+struct Group final : public Expr
 {
 	std::unique_ptr<Expr> expr;
-	Group(std::unique_ptr<Expr> expr_) :expr(std::move(expr_)) {}
-	void accept(AstVisitor<void>& visitor) override
+	explicit Group(std::unique_ptr<Expr> expr_) :expr(std::move(expr_)) {}
+	void Accept(AstVisitor<void>& visitor) override
 	{
-		return visitor.visit_group_expr(*this);
+		return visitor.VisitGroupExpr(*this);
 	}
-	std::string accept(AstVisitor<std::string>& visitor) override
+	std::string Accept(AstVisitor<std::string>& visitor) override
 	{
-		return visitor.visit_group_expr(*this);
+		return visitor.VisitGroupExpr(*this);
 	}
 };
 
-struct Nil : public Expr
+struct Nil final : public Expr
 {
-	Nil() {}
-	void accept(AstVisitor<void>& visitor) override
+	Nil() = default;
+	void Accept(AstVisitor<void>& visitor) override
 	{
-		return visitor.visit_nil_expr(*this);
+		return visitor.VisitNilExpr(*this);
 	}
-	std::string accept(AstVisitor<std::string>& visitor) override
+	std::string Accept(AstVisitor<std::string>& visitor) override
 	{
-		return visitor.visit_nil_expr(*this);
+		return visitor.VisitNilExpr(*this);
 	}
 };
 
