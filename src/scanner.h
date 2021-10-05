@@ -1,7 +1,6 @@
 #pragma once
 
 #include <format>
-#include <string_view>
 #include <vector>
 
 enum class TokenType {
@@ -59,9 +58,9 @@ struct Token {
     std::string_view value;
     int line;
 
-    Token(TokenType t, int l) : type(t), line(l) {}
+    Token(const TokenType t, const int l) : type(t), line(l) {}
 
-    Token(TokenType t, std::string_view v, int l)
+    Token(const TokenType t, const std::string_view v, const int l)
         : type(t), value(v), line(l) {}
 };
 
@@ -70,19 +69,19 @@ std::vector<Token> Scan(std::string_view source);
 
 ////////////////// help function /////////////////////
 
-std::string to_string(TokenType t);
+std::string ToString(TokenType t);
 
 template <> struct std::formatter<TokenType> : std::formatter<std::string> {
     auto format(TokenType t, std::format_context &fc) {
-        return formatter<string>::format(to_string(t), fc);
+        return formatter<string>::format(ToString(t), fc);
     }
 };
 
 template <> struct std::formatter<Token> : std::formatter<std::string> {
     auto format(Token t, std::format_context &fc) {
-        if (t.value.size() == 0) {
+        if (t.value.empty()) {
             return formatter<string>::format(
-                std::format("({}: {})", t.type, t.line, t.value), fc);
+                std::format("({}: {})", t.type, t.line), fc);
         }
         return formatter<string>::format(
             std::format("({}: {}, {})", t.type, t.line, t.value), fc);
