@@ -14,30 +14,30 @@ project (${PROJECT_NAME})
 # find_package(Qt5 COMPONENTS Core Gui Widgets)
 
 set(HEADERS
-	"src/stdafx.h"
-	"src/tools.h"
-	"src/ast.h"
-	"src/scanner.h"
-	"src/parser.h"
-	"src/ast_print.h"
+    "src/stdafx.h"
+    "src/tools.h"
+    "src/ast.h"
+    "src/scanner.h"
+    "src/parser.h"
+    "src/ast_print.h"
 )
 
 set(SOURCES
-	"src/main.cpp"
-	"src/scanner.cpp"
-	"src/parser.cpp"
-	"src/ast_print.cpp"
+    "src/main.cpp"
+    "src/scanner.cpp"
+    "src/parser.cpp"
+    "src/ast_print.cpp"
 )
 
 # 将源代码添加到此项目的可执行文件。
 add_executable (${PROJECT_NAME}  
-	${HEADERS}
-	${SOURCES}
+    ${HEADERS}
+    ${SOURCES}
     )
 
 target_precompile_headers(
     ${PROJECT_NAME} PRIVATE "src/stdafx.h"
-	)
+    )
 
 # link example
 # target_link_libraries(${PROJECT_NAME} 
