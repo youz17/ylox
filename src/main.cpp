@@ -2,26 +2,48 @@
 
 #include "scanner.h"
 #include "parser.h"
-#include "ast_print.h"
+#include "interpreter.h"
+#include "literal.h"
+
+constexpr auto PROMPT = "ylox> ";
 
 void RunPrompt() {
-    std::string input;
-    while (true) {
-        std::getline(std::cin, input);
-        auto expr = Parse(Scan(input));
-        AstPrinter::Print(*expr);
-    }
+	std::string input;
+	while (true)
+	{
+		std::cout << PROMPT;
+		std::getline(std::cin, input);
+		if (input.empty())
+		{
+			std::cout << "please input something" << std::endl;
+			continue;
+		}
+		try
+		{
+			auto expr = Parse(Scan(input));
+			std::cout << Interpreter::Eval(*expr) << std::endl;
+		}
+		catch (std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+		}
+	}
 }
 
 void RunFile(std::string_view file_name) {}
 
-int main(int argc, char *argv[]) {
-    if (argc == 1) {
-        RunPrompt();
-    } else if (argc == 2) {
-        RunFile(argv[1]);
-    } else {
-        std::cerr << "use like ./ylox <script>" << std::endl;
-    }
-    return 0;
+int main(int argc, char* argv[]) {
+	if (argc == 1)
+	{
+		RunPrompt();
+	}
+	else if (argc == 2)
+	{
+		RunFile(argv[1]);
+	}
+	else
+	{
+		std::cerr << "use like ./ylox <script>" << std::endl;
+	}
+	return 0;
 }

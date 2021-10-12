@@ -13,25 +13,34 @@ project (${PROJECT_NAME})
 # find_package example
 # find_package(Qt5 COMPONENTS Core Gui Widgets)
 
-set(HEADERS
+set(SOURCES
+    "src/main.cpp"
+
     "src/stdafx.h"
     "src/tools.h"
     "src/ast.h"
-    "src/scanner.h"
-    "src/parser.h"
-    "src/ast_print.h"
-)
 
-set(SOURCES
-    "src/main.cpp"
+    "src/literal.h"
+    "src/literal.cpp"
+
+    "src/scanner.h"
     "src/scanner.cpp"
+
+    "src/parser.h"
     "src/parser.cpp"
+
+    "src/ast_print.h"
     "src/ast_print.cpp"
+
+    "src/interpreter.h"
+    "src/interpreter.cpp"
+
+    "src/error.h"
+    "src/error.cpp"
 )
 
 # 将源代码添加到此项目的可执行文件。
 add_executable (${PROJECT_NAME}  
-    ${HEADERS}
     ${SOURCES}
     )
 

@@ -2,6 +2,8 @@
 
 #include "ast_print.h"
 
+using namespace ast;
+
 std::string AstPrinter::VisitUnaryExpr(Unary &unary) {
     return std::format("({} {})", unary.op, unary.value->Accept(*this));
 }

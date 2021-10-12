@@ -10,7 +10,7 @@ asts: Dict[str, List[Tuple[str, str]]] = {
     "Nil": []
 }
 
-ast_visitor_types: List[str] = ["void", "std::string"]
+ast_visitor_types: List[str] = ["Literal", "std::string"]
 
 header: str = """
 #pragma once
@@ -18,7 +18,12 @@ header: str = """
 #include <string>
 #include <memory>
 #include "scanner.h"
+#include "literal.h"
+namespace ast{
 """
+
+ender: str = "}"
+
 
 def gen_visitor_code():
     print('template<typename R>')
@@ -92,6 +97,7 @@ def gen_ast_expr():
 def main():
     print(header)
     gen_ast_expr()
+    print(ender)
 
 
 if __name__ == '__main__':

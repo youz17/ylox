@@ -2,14 +2,14 @@
 
 #include "ast.h"
 
-struct AstPrinter : public AstVisitor<std::string> {
-    std::string VisitUnaryExpr(Unary &) override;
-    std::string VisitStringExpr(String &) override;
-    std::string VisitNumberExpr(Number &) override;
-    std::string VisitBoolExpr(Bool &) override;
-    std::string VisitBinaryExpr(Binary &) override;
-    std::string VisitGroupExpr(Group &) override;
-    std::string VisitNilExpr(Nil&) override;
+struct AstPrinter : public ast::AstVisitor<std::string> {
+    std::string VisitUnaryExpr(ast::Unary &) override;
+    std::string VisitStringExpr(ast::String &) override;
+    std::string VisitNumberExpr(ast::Number &) override;
+    std::string VisitBoolExpr(ast::Bool &) override;
+    std::string VisitBinaryExpr(ast::Binary &) override;
+    std::string VisitGroupExpr(ast::Group &) override;
+    std::string VisitNilExpr(ast::Nil&) override;
 
-    static void Print(Expr& expr);
+    static void Print(ast::Expr& expr);
 };
