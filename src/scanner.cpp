@@ -149,8 +149,9 @@ namespace scanner
 			{
 				m_current++;
 			}
+			m_current++;
 			_AddTokenWithValue(
-				TT::Str, m_source.substr(m_start + 1, m_current - m_start - 1));
+				TT::Str, m_source.substr(m_start + 1, m_current - m_start - 2));
 		}
 
 		void _Number()
