@@ -7,7 +7,6 @@
 #include "error.h"
 
 using namespace ast;
-// todo: error handle, & and | , &&, ||
 namespace
 {
 	enum class ExprType
@@ -89,9 +88,9 @@ namespace
 
 			while (GetBinTokenExprType(Peek()) == exprType)
 			{
-				const TokenType op = Next().type;
+				const Token token = Next();
 				auto right = (this->*subExprFun)();
-				expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
+				expr = std::make_unique<Binary>(std::move(expr), token, std::move(right));
 			}
 
 			return expr;
@@ -127,7 +126,7 @@ namespace
 		{
 			if (IsUnary(Peek()))
 			{
-				const TokenType op = Next().type;
+				const Token op = Next();
 				return std::make_unique<struct Unary>(op, Unary());
 			}
 			return Primary();
@@ -156,7 +155,8 @@ namespace
 			{
 				auto expr = Expression();
 				const auto& next = Next();
-				assert(next.type == TokenType::RightParen);
+				if (next.type != TokenType::RightParen)
+					throw ParseError(next, "»±…Ÿ∆•≈‰µƒ ”“¿®∫≈");
 				return make_unique<Group>(std::move(expr));
 			}
 			case TokenType::Identifier:

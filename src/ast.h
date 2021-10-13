@@ -1,13 +1,13 @@
+
 #pragma once
 
 #include <string>
 #include <memory>
-#include <variant>
 #include "scanner.h"
 #include "literal.h"
-
 namespace ast
 {
+
 	struct Unary;
 	struct String;
 	struct Number;
@@ -37,9 +37,9 @@ namespace ast
 
 	struct Unary final : public Expr
 	{
-		TokenType op;
+		Token op;
 		std::unique_ptr<Expr> value;
-		Unary(TokenType op_, std::unique_ptr<Expr> value_) :op(op_), value(std::move(value_)) {}
+		Unary(Token op_, std::unique_ptr<Expr> value_) :op(op_), value(std::move(value_)) {}
 		Literal Accept(AstVisitor<Literal>& visitor) override {
 			return visitor.VisitUnaryExpr(*this);
 		}
@@ -87,9 +87,9 @@ namespace ast
 	struct Binary final : public Expr
 	{
 		std::unique_ptr<Expr> left;
-		TokenType op;
+		Token op;
 		std::unique_ptr<Expr> right;
-		Binary(std::unique_ptr<Expr> left_, TokenType op_, std::unique_ptr<Expr> right_) :left(std::move(left_)), op(op_), right(std::move(right_)) {}
+		Binary(std::unique_ptr<Expr> left_, Token op_, std::unique_ptr<Expr> right_) :left(std::move(left_)), op(op_), right(std::move(right_)) {}
 		Literal Accept(AstVisitor<Literal>& visitor) override {
 			return visitor.VisitBinaryExpr(*this);
 		}
@@ -120,4 +120,5 @@ namespace ast
 			return visitor.VisitNilExpr(*this);
 		}
 	};
+
 }

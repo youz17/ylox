@@ -1,11 +1,11 @@
 from typing import Dict, List, Tuple
 
 asts: Dict[str, List[Tuple[str, str]]] = {
-    "Unary": [("TokenType", "op"), ("std::unique_ptr<Expr>", "value")],
+    "Unary": [("Token", "op"), ("std::unique_ptr<Expr>", "value")],
     "String": [("std::string_view", "value")],
     "Number": [("double", "value")],
     "Bool": [("bool", "value")],
-    "Binary": [("std::unique_ptr<Expr>", "left"), ("TokenType", "op"), ("std::unique_ptr<Expr>", "right")],
+    "Binary": [("std::unique_ptr<Expr>", "left"), ("Token", "op"), ("std::unique_ptr<Expr>", "right")],
     "Group": [("std::unique_ptr<Expr>", "expr")],
     "Nil": []
 }
