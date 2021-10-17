@@ -3,22 +3,24 @@
 #include <variant>
 #include <string>
 
-#include "ast.h"
+#include "expr.h"
 #include "literal.h"
 
-class Interpreter :public ast::AstVisitor<Literal>
+class Interpreter :public expr::Visitor<Literal>
 {
 public:
-	Literal VisitBinaryExpr(ast::Binary& bin) override;
-	Literal VisitBoolExpr(ast::Bool& b) override;
-	Literal VisitGroupExpr(ast::Group& g) override;
-	Literal VisitNilExpr(ast::Nil& nil) override;
-	Literal VisitNumberExpr(ast::Number& num) override;
-	Literal VisitStringExpr(ast::String& str) override;
-	Literal VisitUnaryExpr(ast::Unary& unary) override;
+	Literal VisitBinary(expr::Binary& bin) override;
+	Literal VisitBool(expr::Bool& b) override;
+	Literal VisitGroup(expr::Group& g) override;
+	Literal VisitNil(expr::Nil& nil) override;
+	Literal VisitNumber(expr::Number& num) override;
+	Literal VisitString(expr::String& str) override;
+	Literal VisitUnary(expr::Unary& unary) override;
+	Literal VisitPrint(expr::Print&) override;
+	Literal VisitExpression(expr::Expression&) override;
 
-	static Literal Eval(ast::Expr& expr);
+	static Literal Eval(expr::Expr& expr);
 
 private:
-	Literal _Eval(unique_ptr<ast::Expr>& expr);
+	Literal _Eval(unique_ptr<expr::Expr>& expr);
 };

@@ -2,37 +2,47 @@
 
 #include "ast_print.h"
 
-using namespace ast;
+using namespace expr;
 
-std::string AstPrinter::VisitUnaryExpr(Unary &unary) {
-    return std::format("({} {})", unary.op, unary.value->Accept(*this));
+std::string AstPrinter::VisitUnary(Unary& unary) {
+	return std::format("({} {})", unary.op, unary.value->Accept(*this));
 }
 
-std::string AstPrinter::VisitStringExpr(String &str) { return std::string(str.value); }
+std::string AstPrinter::VisitString(String& str) { return std::string(str.value); }
 
-std::string AstPrinter::VisitNumberExpr(Number &num) {
-    return std::format("{}", num.value);
+std::string AstPrinter::VisitNumber(Number& num) {
+	return std::format("{}", num.value);
 }
 
-std::string AstPrinter::VisitBoolExpr(Bool &b) {
-    return b.value ? "true" : "false";
+std::string AstPrinter::VisitBool(Bool& b) {
+	return b.value ? "true" : "false";
 }
 
-std::string AstPrinter::VisitBinaryExpr(Binary &bin) {
-    return std::format("({} {} {})", bin.op, bin.left->Accept(*this),
-                       bin.right->Accept(*this));
+std::string AstPrinter::VisitBinary(Binary& bin) {
+	return std::format("({} {} {})", bin.op, bin.left->Accept(*this),
+		bin.right->Accept(*this));
 }
 
-std::string AstPrinter::VisitGroupExpr(Group &group) {
-    return std::format("(group {})", group.expr->Accept(*this));
+std::string AstPrinter::VisitGroup(Group& group) {
+	return std::format("(group {})", group.expr->Accept(*this));
 }
 
-std::string AstPrinter::VisitNilExpr(Nil&)
+std::string AstPrinter::VisitNil(Nil&)
 {
-    return "nil";
+	return "nil";
 }
 
-void AstPrinter::Print(Expr &expr) {
-    AstPrinter p;
-    std::cout << expr.Accept(p) << std::endl;
+std::string AstPrinter::VisitPrint(expr::Print&)
+{
+	return "todo"; // todo
+}
+
+std::string AstPrinter::VisitExpression(expr::Expression&)
+{
+	return "todo"; // todo
+}
+
+void AstPrinter::Print(Expr& expr) {
+	AstPrinter p;
+	std::cout << expr.Accept(p) << std::endl;
 }

@@ -18,7 +18,7 @@ set(SOURCES
 
     "src/stdafx.h"
     "src/tools.h"
-    "src/ast.h"
+    "src/expr.h"
 
     "src/literal.h"
     "src/literal.cpp"

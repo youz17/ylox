@@ -156,7 +156,7 @@ namespace scanner
 
 		void _Number()
 		{
-			// 这里允许数字中多个小数点，错误在 ast 阶段处理
+			// 这里允许数字中多个小数点，错误在 expr 阶段处理
 			char c = _Peek();
 			while (_IsNotEnd() && (isdigit(c) || c == '.'))
 			{

@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 #include "scanner.h"
-#include "ast.h"
+#include "expr.h"
 
 class ScanError : public std::runtime_error
 {

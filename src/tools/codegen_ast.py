@@ -7,6 +7,8 @@ asts: Dict[str, List[Tuple[str, str]]] = {
     "Bool": [("bool", "value")],
     "Binary": [("std::unique_ptr<Expr>", "left"), ("Token", "op"), ("std::unique_ptr<Expr>", "right")],
     "Group": [("std::unique_ptr<Expr>", "expr")],
+    "Expression": [("std::unique_ptr<Expr>", "expr")],
+    "Print": [("std::unique_ptr<Expr>", "expr")],
     "Nil": []
 }
 

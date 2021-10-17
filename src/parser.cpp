@@ -6,7 +6,7 @@
 
 #include "error.h"
 
-using namespace ast;
+using namespace expr;
 namespace
 {
 	enum class ExprType

@@ -1,15 +1,17 @@
 #pragma once
 
-#include "ast.h"
+#include "expr.h"
 
-struct AstPrinter : public ast::AstVisitor<std::string> {
-    std::string VisitUnaryExpr(ast::Unary &) override;
-    std::string VisitStringExpr(ast::String &) override;
-    std::string VisitNumberExpr(ast::Number &) override;
-    std::string VisitBoolExpr(ast::Bool &) override;
-    std::string VisitBinaryExpr(ast::Binary &) override;
-    std::string VisitGroupExpr(ast::Group &) override;
-    std::string VisitNilExpr(ast::Nil&) override;
+struct AstPrinter : public expr::Visitor<std::string> {
+    std::string VisitUnary(expr::Unary &) override;
+    std::string VisitString(expr::String &) override;
+    std::string VisitNumber(expr::Number &) override;
+    std::string VisitBool(expr::Bool &) override;
+    std::string VisitBinary(expr::Binary &) override;
+    std::string VisitGroup(expr::Group &) override;
+    std::string VisitNil(expr::Nil&) override;
+    std::string VisitPrint(expr::Print&) override;
+    std::string VisitExpression(expr::Expression&) override;
 
-    static void Print(ast::Expr& expr);
+    static void Print(expr::Expr& expr);
 };

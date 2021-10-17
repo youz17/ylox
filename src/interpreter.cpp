@@ -6,7 +6,7 @@
 
 using tool::variant_index;
 
-Literal Interpreter::VisitBinaryExpr(ast::Binary& bin)
+Literal Interpreter::VisitBinary(expr::Binary& bin)
 {
 	const auto left = _Eval(bin.left);
 	const auto right = _Eval(bin.right);
@@ -56,32 +56,32 @@ Literal Interpreter::VisitBinaryExpr(ast::Binary& bin)
 	}
 }
 
-Literal Interpreter::VisitBoolExpr(ast::Bool& b)
+Literal Interpreter::VisitBool(expr::Bool& b)
 {
 	return b.value;
 }
 
-Literal Interpreter::VisitGroupExpr(ast::Group& g)
+Literal Interpreter::VisitGroup(expr::Group& g)
 {
 	return _Eval(g.expr);
 }
 
-Literal Interpreter::VisitNilExpr(ast::Nil& nil)
+Literal Interpreter::VisitNil(expr::Nil& nil)
 {
 	return nullptr;
 }
 
-Literal Interpreter::VisitNumberExpr(ast::Number& num)
+Literal Interpreter::VisitNumber(expr::Number& num)
 {
 	return num.value;
 }
 
-Literal Interpreter::VisitStringExpr(ast::String& str)
+Literal Interpreter::VisitString(expr::String& str)
 {
 	return std::string(str.value);
 }
 
-Literal Interpreter::VisitUnaryExpr(ast::Unary& unary)
+Literal Interpreter::VisitUnary(expr::Unary& unary)
 {
 	const auto value = _Eval(unary.value);
 	try
@@ -102,7 +102,7 @@ Literal Interpreter::VisitUnaryExpr(ast::Unary& unary)
 	}
 }
 
-Literal Interpreter::Eval(ast::Expr& expr)
+Literal Interpreter::Eval(expr::Expr& expr)
 {
 	try
 	{
@@ -115,7 +115,7 @@ Literal Interpreter::Eval(ast::Expr& expr)
 	}
 }
 
-Literal Interpreter::_Eval(unique_ptr<ast::Expr>& expr)
+Literal Interpreter::_Eval(unique_ptr<expr::Expr>& expr)
 {
 	return expr->Accept(*this);
 }
