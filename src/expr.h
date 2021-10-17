@@ -9,13 +9,12 @@ namespace expr
 {
 	struct Binary;
 	struct Bool;
-	struct Expression;
 	struct Group;
 	struct Nil;
 	struct Number;
-	struct Print;
 	struct String;
 	struct Unary;
+
 	template<typename R>
 	struct Visitor
 	{
@@ -23,14 +22,13 @@ namespace expr
 
 		virtual R VisitBinary(Binary&) = 0;
 		virtual R VisitBool(Bool&) = 0;
-		virtual R VisitExpression(Expression&) = 0;
 		virtual R VisitGroup(Group&) = 0;
 		virtual R VisitNil(Nil&) = 0;
 		virtual R VisitNumber(Number&) = 0;
-		virtual R VisitPrint(Print&) = 0;
 		virtual R VisitString(String&) = 0;
 		virtual R VisitUnary(Unary&) = 0;
 	};
+
 	struct Expr
 	{
 		virtual ~Expr() = default;
@@ -38,6 +36,7 @@ namespace expr
 		virtual Literal Accept(Visitor<Literal>&) = 0;
 		virtual std::string Accept(Visitor<std::string>&) = 0;
 	};
+
 	struct Binary : public Expr
 	{
 		std::unique_ptr<Expr> left;
@@ -52,6 +51,7 @@ namespace expr
 		}
 
 	};
+
 	struct Bool : public Expr
 	{
 		bool value;
@@ -64,18 +64,7 @@ namespace expr
 		}
 
 	};
-	struct Expression : public Expr
-	{
-		std::unique_ptr<Expr> expr;
-		explicit Expression(std::unique_ptr<Expr> expr_) noexcept :expr(std::move(expr_)) {}
-		Literal Accept(Visitor<Literal>& visitor) override {
-			return visitor.VisitExpression(*this);
-		}
-		std::string Accept(Visitor<std::string>& visitor) override {
-			return visitor.VisitExpression(*this);
-		}
 
-	};
 	struct Group : public Expr
 	{
 		std::unique_ptr<Expr> expr;
@@ -88,6 +77,7 @@ namespace expr
 		}
 
 	};
+
 	struct Nil : public Expr
 	{
 		explicit Nil() noexcept {}
@@ -99,6 +89,7 @@ namespace expr
 		}
 
 	};
+
 	struct Number : public Expr
 	{
 		double value;
@@ -111,18 +102,7 @@ namespace expr
 		}
 
 	};
-	struct Print : public Expr
-	{
-		std::unique_ptr<Expr> expr;
-		explicit Print(std::unique_ptr<Expr> expr_) noexcept :expr(std::move(expr_)) {}
-		Literal Accept(Visitor<Literal>& visitor) override {
-			return visitor.VisitPrint(*this);
-		}
-		std::string Accept(Visitor<std::string>& visitor) override {
-			return visitor.VisitPrint(*this);
-		}
 
-	};
 	struct String : public Expr
 	{
 		std::string_view value;
@@ -135,6 +115,7 @@ namespace expr
 		}
 
 	};
+
 	struct Unary : public Expr
 	{
 		Token op;
@@ -146,6 +127,6 @@ namespace expr
 		std::string Accept(Visitor<std::string>& visitor) override {
 			return visitor.VisitUnary(*this);
 		}
-
 	};
+
 }

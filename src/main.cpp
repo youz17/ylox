@@ -20,8 +20,8 @@ void RunPrompt() {
 		}
 		try
 		{
-			auto expr = Parse(Scan(input));
-			std::cout << Interpreter::Eval(*expr) << std::endl;
+			auto stmts = Parse(Scan(input));
+			Interpreter::Eval(stmts);
 		}
 		catch (std::exception& e)
 		{

@@ -6,7 +6,6 @@
 
 #include "error.h"
 
-using namespace expr;
 namespace
 {
 	enum class ExprType
@@ -75,14 +74,54 @@ namespace
 	public:
 		explicit Parser(const std::vector<Token>& tokens) noexcept : m_tokens(tokens) {}
 
-		std::unique_ptr<Expr> Expression()
+		StmtVec Parse()
+		{
+			StmtVec stmts;
+
+			while (!IsEnd())
+			{
+				stmts.push_back(Statement());
+			}
+
+			return stmts;
+		}
+
+	private:
+		std::unique_ptr<stmt::Stmt> Statement()
+		{
+			auto next = Next();
+			switch (next.type)
+			{
+			case TokenType::Print:
+				return Print();
+			default:
+				assert(false);
+			}
+		}
+
+		std::unique_ptr<stmt::Stmt> Print()
+		{
+			auto expr = make_unique<stmt::Print>(Expression());
+
+			Consume(TokenType::Semicolon, "expect ';' after expr");
+
+			return expr;
+		}
+
+		unique_ptr<stmt::Stmt> ExpressionStmt() {
+			unique_ptr<expr::Expr> expr = Expression();
+			Consume(TokenType::Semicolon, "Expect ';' after expression.");
+			return make_unique<stmt::Expression>(std::move(expr));
+		}
+
+
+		std::unique_ptr<expr::Expr> Expression()
 		{
 			return Logical();
 		}
 
-	private:
-		using BinOperatorImplFunType = unique_ptr<Expr>(Parser::*)();
-		std::unique_ptr<Expr> BinOperatorImpl(ExprType exprType, BinOperatorImplFunType subExprFun)
+		using BinOperatorImplFunType = unique_ptr<expr::Expr>(Parser::*)();
+		std::unique_ptr<expr::Expr> BinOperatorImpl(ExprType exprType, BinOperatorImplFunType subExprFun)
 		{
 			auto expr = (this->*subExprFun)();
 
@@ -90,74 +129,74 @@ namespace
 			{
 				const Token token = Next();
 				auto right = (this->*subExprFun)();
-				expr = std::make_unique<Binary>(std::move(expr), token, std::move(right));
+				expr = std::make_unique<expr::Binary>(std::move(expr), token, std::move(right));
 			}
 
 			return expr;
 		}
 
 		// 好像可以进一步抽象，只定义优先级就好了
-		std::unique_ptr<Expr> Logical()
+		std::unique_ptr<expr::Expr> Logical()
 		{
 			return BinOperatorImpl(ExprType::Logical, &Parser::Equality);
 		}
 
-		std::unique_ptr<Expr> Equality()
+		std::unique_ptr<expr::Expr> Equality()
 		{
 			return BinOperatorImpl(ExprType::Equality, &Parser::Comparison);
 		}
 
-		std::unique_ptr<Expr> Comparison()
+		std::unique_ptr<expr::Expr> Comparison()
 		{
 			return BinOperatorImpl(ExprType::Comparison, &Parser::Term);
 		}
 
-		std::unique_ptr<Expr> Term()
+		std::unique_ptr<expr::Expr> Term()
 		{
 			return BinOperatorImpl(ExprType::Term, &Parser::Factor);
 		}
 
-		std::unique_ptr<Expr> Factor()
+		std::unique_ptr<expr::Expr> Factor()
 		{
 			return BinOperatorImpl(ExprType::Factor, &Parser::Unary);
 		}
 
-		std::unique_ptr<Expr> Unary()
+		std::unique_ptr<expr::Expr> Unary()
 		{
 			if (IsUnary(Peek()))
 			{
 				const Token op = Next();
-				return std::make_unique<struct Unary>(op, Unary());
+				return std::make_unique<expr::Unary>(op, Unary());
 			}
 			return Primary();
 		}
 
-		std::unique_ptr<Expr> Primary()
+		std::unique_ptr<expr::Expr> Primary()
 		{
 			const auto& token = Next();
 			switch (token.type)
 			{
 			case TokenType::Str:
-				return make_unique<String>(token.value);
+				return make_unique<expr::String>(token.value);
 			case TokenType::Number:
 			{
 				double res = 0;
 				std::from_chars(token.value.data(), token.value.data() + token.value.size(), res); // todo: error handle
-				return make_unique<Number>(res);
+				return make_unique<expr::Number>(res);
 			}
 			case TokenType::True:
-				return make_unique<Bool>(true);
+				return make_unique<expr::Bool>(true);
 			case TokenType::False:
-				return make_unique<Bool>(false);
+				return make_unique<expr::Bool>(false);
 			case TokenType::Nil:
-				return make_unique<Nil>();
+				return make_unique<expr::Nil>();
 			case TokenType::LeftParen:
 			{
 				auto expr = Expression();
 				const auto& next = Next();
 				if (next.type != TokenType::RightParen)
 					throw ParseError(next, "缺少匹配的 右括号");
-				return make_unique<Group>(std::move(expr));
+				return make_unique<expr::Group>(std::move(expr));
 			}
 			case TokenType::Identifier:
 				// todo
@@ -201,14 +240,24 @@ namespace
 			return m_tokens[m_idx].type == TokenType::Eof;
 		}
 
+		void Consume(TokenType expect, std::string msg)
+		{
+			auto next = Next();
+			if (next.type == expect)
+			{
+				return;
+			}
+			throw ParseError(next, msg);
+		}
+
 	private:
 		const std::vector<Token>& m_tokens;
 		size_t m_idx = 0;
 	};
 }
 
-unique_ptr<Expr> Parse(const vector<Token>& tokens)
+vector<unique_ptr<stmt::Stmt>> Parse(const vector<Token>& tokens)
 {
 	Parser parser(tokens);
-	return parser.Expression();
+	return parser.Parse();
 }

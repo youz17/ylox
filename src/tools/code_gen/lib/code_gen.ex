@@ -140,10 +140,15 @@ defmodule CodeGen do
   def gen_code(type_info) do
     {:ok, file} = File.open("#{type_info.name}.h", [:write])
 
+    newline = fn -> IO.puts(file, "") end
+
     gen_header(file, type_info.name)
     Enum.map(type_info.types, fn {type, _} -> IO.puts(file, "struct #{type};") end)
+    newline.()
     gen_visitor(file, type_info)
+    newline.()
     gen_base(file, type_info)
+    newline.()
 
     Enum.map(type_info.types, fn {name, fields} -> gen_sub_type(file, name, fields, type_info) end)
 
@@ -164,14 +169,22 @@ defmodule CodeGen do
           {"std::unique_ptr<Expr>", "right"}
         ],
         "Group" => [{"std::unique_ptr<Expr>", "expr"}],
-        "Expression" => [{"std::unique_ptr<Expr>", "expr"}],
-        "Print" => [{"std::unique_ptr<Expr>", "expr"}],
         "Nil" => []
       },
       name: "expr",
       visitor_return_types: ["Literal", "std::string"]
     }
 
+    stmt = %TypeInfo{
+      types: %{
+        "Expression" => [{"std::unique_ptr<expr::Expr>", "expr"}],
+        "Print" => [{"std::unique_ptr<expr::Expr>", "expr"}]
+      },
+      name: "stmt",
+      visitor_return_types: ["void"]
+    }
+
     gen_code(expr)
+    gen_code(stmt)
   end
 end

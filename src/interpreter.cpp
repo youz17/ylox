@@ -102,12 +102,24 @@ Literal Interpreter::VisitUnary(expr::Unary& unary)
 	}
 }
 
-Literal Interpreter::Eval(expr::Expr& expr)
+void Interpreter::VisitExpression(stmt::Expression& e)
+{
+}
+
+void Interpreter::VisitPrint(stmt::Print& p)
+{
+	std::cout << _Eval(p.expr) << std::endl;
+}
+
+void Interpreter::Eval(const StmtVec& stmts)
 {
 	try
 	{
 		Interpreter i;
-		return expr.Accept(i);
+		for (auto& stmt: stmts)
+		{
+			stmt->Accept(i);
+		}
 	}
 	catch (std::bad_variant_access&)
 	{

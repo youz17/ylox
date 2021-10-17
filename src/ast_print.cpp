@@ -32,16 +32,6 @@ std::string AstPrinter::VisitNil(Nil&)
 	return "nil";
 }
 
-std::string AstPrinter::VisitPrint(expr::Print&)
-{
-	return "todo"; // todo
-}
-
-std::string AstPrinter::VisitExpression(expr::Expression&)
-{
-	return "todo"; // todo
-}
-
 void AstPrinter::Print(Expr& expr) {
 	AstPrinter p;
 	std::cout << expr.Accept(p) << std::endl;
