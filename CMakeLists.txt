@@ -30,8 +30,8 @@ set(SOURCES
     "src/parser.h"
     "src/parser.cpp"
 
-    "src/ast_print.h"
-    "src/ast_print.cpp"
+    # "src/ast_print.h"
+    # "src/ast_print.cpp"
 
     "src/interpreter.h"
     "src/interpreter.cpp"

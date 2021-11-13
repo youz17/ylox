@@ -24,13 +24,13 @@ Literal Interpreter::VisitBinary(expr::Binary& bin)
 				return std::get<double>(left) + std::get<double>(right);
 			if (left.index() == variant_index<Literal, std::string>())
 				return std::get<std::string>(left) + std::get<std::string>(right);
-			throw InterpreterError("error type, not support add");
+			throw RuntimeError("error type, not support add");
 		}
 		case TokenType::Minus:
 			return std::get<double>(left) - std::get<double>(right);
 		case TokenType::Slash:
 			if (std::get<double>(right) == 0)
-				throw InterpreterError(bin.op, "/0 error");
+				throw RuntimeError(bin.op, "/0 error");
 			return std::get<double>(left) / std::get<double>(right);
 		case TokenType::Star:
 			return std::get<double>(left) * std::get<double>(right);
@@ -44,15 +44,15 @@ Literal Interpreter::VisitBinary(expr::Binary& bin)
 			return std::get<double>(left) <= std::get<double>(right);
 		case TokenType::EqualEqual:
 			if (left.index() != right.index())
-				throw InterpreterError(bin.op, "== left type not same as right");
+				throw RuntimeError(bin.op, "== left type not same as right");
 			return left == right;
 		default:
-			throw InterpreterError(bin.op, "not implement bin op");
+			throw RuntimeError(bin.op, "not implement bin op");
 		}
 	}
 	catch (std::bad_variant_access&)
 	{
-		throw InterpreterError(bin.op, "error binary type");
+		throw RuntimeError(bin.op, "error binary type");
 	}
 }
 
@@ -93,17 +93,23 @@ Literal Interpreter::VisitUnary(expr::Unary& unary)
 		case TokenType::Minus:
 			return -(std::get<double>(value));
 		default:
-			throw InterpreterError(unary.op, "error unary op");
+			throw RuntimeError(unary.op, "error unary op");
 		}
 	}
 	catch (std::bad_variant_access&)
 	{
-		throw InterpreterError(unary.op, "error unary type");
+		throw RuntimeError(unary.op, "error unary type");
 	}
+}
+
+Literal Interpreter::VisitVariable(expr::Variable& var)
+{
+	return _Get(var.name);
 }
 
 void Interpreter::VisitExpression(stmt::Expression& e)
 {
+	_Eval(e.expr);
 }
 
 void Interpreter::VisitPrint(stmt::Print& p)
@@ -111,23 +117,36 @@ void Interpreter::VisitPrint(stmt::Print& p)
 	std::cout << _Eval(p.expr) << std::endl;
 }
 
+void Interpreter::VisitLet(stmt::Let& l)
+{
+	// todo: ¼ì²éÊÇ·ñ´æÔÚ
+	m_vars.emplace(l.name, _Eval(l.expr));
+}
+
 void Interpreter::Eval(const StmtVec& stmts)
 {
 	try
 	{
-		Interpreter i;
-		for (auto& stmt: stmts)
+		for (auto& stmt : stmts)
 		{
-			stmt->Accept(i);
+			stmt->Accept(*this);
 		}
 	}
 	catch (std::bad_variant_access&)
 	{
-		throw InterpreterError("error type");
+		throw RuntimeError("error type");
 	}
 }
 
 Literal Interpreter::_Eval(unique_ptr<expr::Expr>& expr)
 {
 	return expr->Accept(*this);
+}
+
+const Literal& Interpreter::_Get(std::string_view var_name) const
+{
+	const auto iter = m_vars.find(var_name);
+	if (iter != m_vars.end())
+		return  iter->second;
+	throw RuntimeError(std::format("can not find var {}", var_name));
 }

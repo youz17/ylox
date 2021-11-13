@@ -2,6 +2,8 @@
 
 #include <string>
 #include <memory>
+
+#include "expr.h"
 #include "scanner.h"
 #include "literal.h"
 
@@ -14,6 +16,7 @@ namespace expr
 	struct Number;
 	struct String;
 	struct Unary;
+	struct Variable;
 
 	template<typename R>
 	struct Visitor
@@ -27,6 +30,7 @@ namespace expr
 		virtual R VisitNumber(Number&) = 0;
 		virtual R VisitString(String&) = 0;
 		virtual R VisitUnary(Unary&) = 0;
+		virtual R VisitVariable(Variable&) = 0;
 	};
 
 	struct Expr
@@ -129,4 +133,16 @@ namespace expr
 		}
 	};
 
+
+	struct Variable : public Expr
+	{
+		std::string_view name;
+		explicit Variable(std::string_view name_) : name{ name_ } {}
+		Literal Accept(Visitor<Literal>& visitor) override {
+			return visitor.VisitVariable(*this);
+		}
+		std::string Accept(Visitor<std::string>& visitor) override {
+			return visitor.VisitVariable(*this);
+		}
+	};
 }

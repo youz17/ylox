@@ -29,11 +29,11 @@ private:
 	Token m_token;
 };
 
-class InterpreterError : public std::runtime_error
+class RuntimeError : public std::runtime_error
 {
 public:
-	InterpreterError(const Token& token, const std::string& message) : std::runtime_error(message), m_token(token) {}
-	InterpreterError(const std::string& message) : std::runtime_error(message), m_token(TokenType::Eof, -1) {}
+	RuntimeError(const Token& token, const std::string& message) : std::runtime_error(message), m_token(token) {}
+	RuntimeError(const std::string& message) : std::runtime_error(message), m_token(TokenType::Eof, -1) {}
 
 	Token& GetToken() { return m_token; }
 

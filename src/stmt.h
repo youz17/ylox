@@ -9,6 +9,9 @@ namespace stmt
 {
 	struct Expression;
 	struct Print;
+	struct Let;
+	// struct If;
+	// struct IfElse;
 
 	template<typename R>
 	struct Visitor
@@ -17,6 +20,7 @@ namespace stmt
 
 		virtual R VisitExpression(Expression&) = 0;
 		virtual R VisitPrint(Print&) = 0;
+		virtual R VisitLet(Let&) = 0;
 	};
 
 	struct Stmt
@@ -43,7 +47,15 @@ namespace stmt
 		void Accept(Visitor<void>& visitor) override {
 			return visitor.VisitPrint(*this);
 		}
-
 	};
 
+	struct Let : public Stmt
+	{
+		std::string name;
+		std::unique_ptr<expr::Expr> expr;
+		explicit Let(std::string_view name_, std::unique_ptr<expr::Expr> expr_) noexcept :name(name_), expr(std::move(expr_)) {}
+		void Accept(Visitor<void>& visitor) override {
+			return visitor.VisitLet(*this);
+		}
+	};
 }

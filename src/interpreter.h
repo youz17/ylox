@@ -1,7 +1,7 @@
 #pragma once
 
-#include <variant>
 #include <string>
+#include <map>
 
 #include "expr.h"
 #include "stmt.h"
@@ -18,12 +18,18 @@ public:
 	Literal VisitNumber(expr::Number& num) override;
 	Literal VisitString(expr::String& str) override;
 	Literal VisitUnary(expr::Unary& unary) override;
+	Literal VisitVariable(expr::Variable& var) override;
 
 	void VisitExpression(stmt::Expression& e) override;
 	void VisitPrint(stmt::Print& p) override;
+	void VisitLet(stmt::Let& l) override;
 
-	static void Eval(const StmtVec& expr);
+	void Eval(const StmtVec& expr);
 
 private:
 	Literal _Eval(unique_ptr<expr::Expr>& expr);
+	const Literal& _Get(std::string_view var_name) const;
+
+private:
+	std::map<std::string, Literal, std::less<>> m_vars;
 };

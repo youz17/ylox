@@ -9,9 +9,15 @@
 #include <iostream>
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <memory>
 
 using std::make_unique;
 using std::unique_ptr;
 using std::vector;
+
+#ifdef NDEBUG
+#define ASSERT(_) (void(0))
+#else
+#include <cassert>
+#define ASSERT(x) assert(x)
+#endif

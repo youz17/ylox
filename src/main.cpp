@@ -9,6 +9,7 @@ constexpr auto PROMPT = "ylox> ";
 
 void RunPrompt() {
 	std::string input;
+	Interpreter i;
 	while (true)
 	{
 		std::cout << PROMPT;
@@ -21,7 +22,7 @@ void RunPrompt() {
 		try
 		{
 			auto stmts = Parse(Scan(input));
-			Interpreter::Eval(stmts);
+			i.Eval(stmts);
 		}
 		catch (std::exception& e)
 		{

@@ -327,7 +327,7 @@ std::string ToString(TokenType t)
 	case TT::Eof:
 		return "eof";
 	default:
-		assert(false);
+		ASSERT(false);
 		return "";
 	}
 }

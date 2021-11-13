@@ -80,30 +80,62 @@ namespace
 
 			while (!IsEnd())
 			{
-				stmts.push_back(Statement());
+				stmts.push_back(Declaration());
 			}
 
 			return stmts;
 		}
 
 	private:
+		std::unique_ptr<stmt::Stmt> Declaration()
+		{
+			try
+			{
+				auto next = Peek();
+				switch (next.type)
+				{
+				case TokenType::Let:
+					Next();
+					return LetDeclaration();
+				default:
+					return Statement();
+				}
+			}
+			catch (ParseError&)
+			{
+				Synchronize();
+			}
+		}
+
+		std::unique_ptr<stmt::Stmt> LetDeclaration()
+		{
+			auto id = Next();
+			if (id.type != TokenType::Identifier)
+				throw ParseError(id, "follow by let is not a Identifier");
+			Consume(TokenType::Equal, "let statement expect '='");
+			
+			auto let = make_unique<stmt::Let>(id.value, Expression());
+			Consume(TokenType::Semicolon, "expect ';' after print");
+			return let;
+		}
+
 		std::unique_ptr<stmt::Stmt> Statement()
 		{
 			auto next = Next();
 			switch (next.type)
 			{
 			case TokenType::Print:
-				return Print();
+				return PrintStmt();
 			default:
-				assert(false);
+				return ExpressionStmt();
 			}
 		}
 
-		std::unique_ptr<stmt::Stmt> Print()
+		std::unique_ptr<stmt::Stmt> PrintStmt()
 		{
 			auto expr = make_unique<stmt::Print>(Expression());
 
-			Consume(TokenType::Semicolon, "expect ';' after expr");
+			Consume(TokenType::Semicolon, "expect ';' after print");
 
 			return expr;
 		}
@@ -113,7 +145,6 @@ namespace
 			Consume(TokenType::Semicolon, "Expect ';' after expression.");
 			return make_unique<stmt::Expression>(std::move(expr));
 		}
-
 
 		std::unique_ptr<expr::Expr> Expression()
 		{
@@ -199,7 +230,7 @@ namespace
 				return make_unique<expr::Group>(std::move(expr));
 			}
 			case TokenType::Identifier:
-				// todo
+				return make_unique<expr::Variable>(token.value);
 			default:
 				throw ParseError(token);
 			}
